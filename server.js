@@ -4,7 +4,6 @@ console.log('our first server');
 
 // REQUIRE
 const express = require('express');
-let weatherData = require('./data/weather.json');
 require('dotenv').config();
 const cors = require('cors');
 const axios = require('axios');
@@ -17,16 +16,19 @@ app.use(cors());
 
 // ROUTES
 // app.get() correlates to axios.get()
-app.get('/', (request, response) => {
-  response.send('Hello, from our server');
-});
 
-app.get('/weather', (request, response) => {
+app.get('/weather', async (request, response) => {
   let lat = request.query.lat;
   let lon = request.query.lon;
-  let searchQuery = weatherData.filter(city => (city.lat === lat && city.lon === lon));
-  let threeDayForecast = new Forecast(searchQuery);
+  console.log(request);
+  let weatherURL = `http://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&days=3&key=${process.env.WEATHER_API_KEY}`;
+  let searchQuery = await axios.get(weatherURL);
+  let threeDayForecast = searchQuery.data.data.map(day => new Forecast(day));
   threeDayForecast.length < 1 ? response.status(500).send('Error. City not covered by system.') : response.status(200).send(threeDayForecast);
+});
+
+app.get('/', (request, response) => {
+  response.send('Hello, from our server');
 });
 
 // this will run for any route not defined above
@@ -44,17 +46,11 @@ app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
 class Forecast {
   constructor(weatherObj) {
-    this.day1 = {
-      date: weatherObj[0].data[0].datetime,
-      description: `Low of ${weatherObj[0].data[0].min_temp}, high of ${weatherObj[0].data[0].max_temp} with ${weatherObj[0].data[0].weather.description.toLowerCase()}`
-    };
-    this.day2 = {
-      date:  weatherObj[0].data[1].datetime,
-      description: `Low of ${weatherObj[0].data[1].min_temp}, high of ${weatherObj[0].data[1].max_temp} with ${weatherObj[0].data[1].weather.description.toLowerCase()}`
-    };
-    this.day3 = {
-      date:  weatherObj[0].data[2].datetime,
-      description: `Low of ${weatherObj[0].data[2].min_temp}, high of ${weatherObj[0].data[2].max_temp} with ${weatherObj[0].data[2].weather.description.toLowerCase()}`
-    };
+    console.log('weatherObj:', weatherObj);
+    this.date = weatherObj.datetime;
+    this.description = weatherObj.weather.description.toLowerCase();
+    this.low = weatherObj.low_temp;
+    this.high = weatherObj.max_temp;
+    this.fullDescription = `Low of ${this.low}, high of ${this.high} with ${this.description}.`;
   };
 };
