@@ -6,10 +6,12 @@ console.log('our first server');
 const express = require('express');
 let weatherData = require('./data/weather.json');
 require('dotenv').config();
+const cors = require('cors');
 
 // USE
 const app = express();
 const PORT=process.env.PORT || 3002;
+app.use(cors());
 
 
 // ROUTES
