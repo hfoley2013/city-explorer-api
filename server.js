@@ -69,7 +69,7 @@ class Movie {
     this.overview = movieObj.overview;
     this.averageRating = movieObj.vote_average;
     this.totalReviews = movieObj.vote_count;
-    this.imgPath = movieObj.poster_path;
+    this.imgPath = `https://image.tmdb.org/t/p/original/${movieObj.poster_path}`;
     this.releaseDate = movieObj.release_date;
   };
 };
