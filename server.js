@@ -32,7 +32,7 @@ app.get('/movie', async (request, response) => {
   let movieResults = await axios.get(movieURL);
   let topMovies = movieResults.data.results.map(movie => new Movie(movie));
   topMovies.length < 1 ? response.status(500).send('Error. Movie not found.') : response.status(200).send(topMovies);
-})
+});
 
 
 app.get('/', (request, response) => {
