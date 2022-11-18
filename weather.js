@@ -1,12 +1,35 @@
 const axios = require('axios');
+let cache = {
+  cachedWeather: null,
+  weatherTimestamp: null,
+  searchedCoordinates: {
+    lat: null,
+    lon: null
+  }
+};
+
 
 let weather = async function(request, response) {
-    let lat = request.query.lat;
-    let lon = request.query.lon;
+  // cache variables
+  let timeToTestCache = 1000 * 20;
+  let timeRightNow = Date.now();
+  // query variables
+  let lat = request.query.lat;
+  let lon = request.query.lon;
+  // test if cache is present && recent, return cache, else run new API call
+  if(cache && timeRightNow - cache.weatherTimestamp < timeToTestCache && cache.searchedCoordinates[lat] === lat && cache.searchedCoordinates[lon] === lon) {
+    console.log('Data stored in cache');
+    response.status(200).send(cache.cachedWeather);
+  } else {
     let weatherURL = `http://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&days=3&key=${process.env.WEATHER_API_KEY}`;
     let searchQuery = await axios.get(weatherURL);
     let threeDayForecast = searchQuery.data.data.map(day => new Forecast(day));
     threeDayForecast.length < 1 ? response.status(500).send('Error. City not covered by system.') : response.status(200).send(threeDayForecast);
+    cache.cachedWeather = threeDayForecast;
+    cache.weatherTimestamp = Date.now();
+    cache.searchedCoordinates[lat] = lat;
+    cache.searchedCoordinates[lon] = lon; 
+  };
 };
 
 class Forecast {
