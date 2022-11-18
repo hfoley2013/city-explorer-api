@@ -11,11 +11,17 @@ The server now features a caching system to the weather and movie data. The defa
 
 ## Getting Started
 
-* TODO
+* Clone down the repo to your local machine: `git clone https://github.com/hfoley2013/city-explorer-api.git`
+* Set environmental variables in the provided `.env.sample` file to reflect your API keys
 
 ## Architecture
 
-* TODO
+* The code is broken out into three files to handle specific functions:
+  1. `server.js` calls the `weather` and `movies` functions and returns the result of their queries to the front end.
+  2. `weather.js` utilizes `axios` to query the WeatherBit API for the specific latitude and longitude of the city input by the user. The query is then stored in the `cache` for later reference.
+  3. `movies.js` utilizes `axios` to query the TMDB API for movies featuring the name of the city input by the user.
+* For the code to function, you will need to obtain API keys from the sites listed above and store them in a `.env` file.
+  * A sample file has been provided. You will need to update the file to the desired PORT for local testing and input your actual API keys.
 
 ## Change Log
 
