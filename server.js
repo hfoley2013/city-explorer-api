@@ -39,25 +39,3 @@ app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
 
 // CLASSES
-
-class Forecast {
-  constructor(weatherObj) {
-    console.log('weatherObj:', weatherObj);
-    this.date = weatherObj.datetime;
-    this.description = weatherObj.weather.description.toLowerCase();
-    this.low = weatherObj.low_temp;
-    this.high = weatherObj.max_temp;
-    this.fullDescription = `Low of ${this.low}, high of ${this.high} with ${this.description}.`;
-  };
-};
-
-class Movie {
-  constructor(movieObj) {
-    this.title = movieObj.title;
-    this.overview = movieObj.overview;
-    this.averageRating = movieObj.vote_average;
-    this.totalReviews = movieObj.vote_count;
-    this.imgPath = movieObj.poster_path ? `https://image.tmdb.org/t/p/original/${movieObj.poster_path}` : '';
-    this.releaseDate = movieObj.release_date;
-  };
-};
